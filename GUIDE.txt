@@ -1,0 +1,828 @@
+╔══════════════════════════════════════════════════════════════╗
+║              BODYBUILDING LANDING PAGE - GUIA COMPLETA        ║
+║                React + Vite + TypeScript + Tailwind v4        ║
+╚══════════════════════════════════════════════════════════════╝
+
+PRERREQUISITO: Ya tenés el proyecto creado en /bodyBuilding con:
+  pnpm create vite bodybuilding --template react-ts
+  cd bodybuilding
+  pnpm install
+
+══════════════════════════════════════════════════════════════════
+PASO 1 — Instalar Tailwind v4
+══════════════════════════════════════════════════════════════════
+
+Ejecutá en la terminal (parado en el proyecto):
+
+   pnpm add -D tailwindcss @tailwindcss/vite
+   pnpm add @fontsource/jetbrains-mono 
+
+┌────────────────────────────────────────────────────────────┐
+│ ¿Qué pasó?                                                 │
+│ -D = dependencia de desarrollo (solo para compilar).       │
+│ tailwindcss + @tailwindcss/vite = Tailwind v4 con su       │
+│ plugin oficial para Vite. Sin esto, Tailwind no funciona.  │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 2 — Configurar vite.config.ts
+══════════════════════════════════════════════════════════════════
+
+ABRÍ: vite.config.ts (en la raíz)
+PEGÁ ESTO (reemplazando TODO el contenido):
+
+  import { defineConfig } from 'vite'
+  import react from '@vitejs/plugin-react'
+  import tailwindcss from '@tailwindcss/vite'
+
+  export default defineConfig({
+    plugins: [react(), tailwindcss()],
+  })
+
+┌────────────────────────────────────────────────────────────┐
+│ ¿Qué pasó?                                                 │
+│ Se agrega el plugin tailwindcss al array de plugins de     │
+│ Vite. Así Vite compila nuestro CSS con Tailwind.           │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 3 — Limpiar archivos del template default
+══════════════════════════════════════════════════════════════════
+
+Ejecutá en la terminal:
+
+  rm src/App.css src/assets/react.svg src/assets/vite.svg
+
+Ahora ABRÍ src/App.tsx y src/index.css y BORRÁ TODO su contenido
+(dejalos vacíos, los llenamos en los próximos pasos).
+
+┌────────────────────────────────────────────────────────────┐
+│ ¿Qué pasó?                                                 │
+│ La plantilla de Vite trae un contador de ejemplo con       │
+│ estilos y logos. Todo eso no lo necesitamos: arrancamos    │
+│ de cero con NUESTRO diseño.                                │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 4 — Escribir src/index.css (paleta + estilos globales)
+══════════════════════════════════════════════════════════════════
+
+ABRÍ: src/index.css
+PEGÁ ESTO EXACTO (reemplaza todo):
+
+  @import "tailwindcss";
+
+  @theme {
+    --color-dark-950: #0D0D11;
+    --color-dark-900: #121218;
+    --color-dark-800: #1A1A22;
+    --color-dark-700: #26262E;
+    --color-neon-orange: #FF5500;
+    --color-neon-cyan: #00E5FF;
+    --color-light: #EEEEEE;
+    --color-muted: #9CA3AF;
+
+    --animate-underline-grow: underline-grow 0.35s ease-out forwards;
+
+    @keyframes underline-grow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+    }
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--color-dark-950);
+    color: var(--color-light);
+    font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  }
+
+┌────────────────────────────────────────────────────────────┐
+│ ¿Qué es cada cosa?                                         │
+│                                                           │
+│ @import "tailwindcss"  ->  activa Tailwind v4             │
+│                                                           │
+│ @theme { ... }  ->  define colores personalizados. Cada   │
+│   --color-xxx se convierte en clases Tailwind automático: │
+│   bg-dark-900, text-neon-orange, border-neon-cyan, etc.  │
+│   Además define la animación --animate-underline-grow     │
+│   (genera la clase animate-underline-grow) con su         │
+│   @keyframes underline-grow que hace crecer el underline  │
+│   con transform: scaleX de 0 a 1.                        │
+│                                                           │
+│ body  ->  fondo casi negro + texto claro: el dark mode    │
+│   global de toda la página.                               │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 5 — Crear src/components/Navbar.tsx
+══════════════════════════════════════════════════════════════════
+
+CREÁ: src/components/Navbar.tsx
+PEGÁ ESTO:
+
+  import { useState } from 'react'
+  import { MuscleIcon } from './Icons'
+
+  const Navbar = () => {
+    const links = ["HOME", "SERVICES", "TESTIMONIALS", "VIDEO GALLERY", "CONTACT"]
+    const [active, setActive] = useState("HOME")
+
+    return (
+      <nav className="flex items-center gap-8 px-6 md:px-16 py-4 border-b border-dark-700 bg-dark-950/80 backdrop-blur sticky top-0 z-50">
+        <MuscleIcon className="w-8 h-8 md:w-10 md:h-10 shrink-0" />
+
+        <div className="flex items-center gap-6 ml-auto">
+          <ul className="hidden md:flex gap-6">
+            {links.map((link) => (
+              <li key={link}>
+                <a
+                  href="#"
+                  onClick={() => setActive(link)}
+                  className={`relative text-sm tracking-widest transition-colors after:absolute after:-bottom-1 after:left-0 after:h-0.5 after:w-full after:bg-neon-orange after:origin-left after:scale-x-0 after:transition-transform after:duration-300 ${
+                    active === link
+                      ? "text-neon-orange after:scale-x-100 after:animate-underline-grow"
+                      : "text-muted hover:text-neon-orange hover:after:animate-underline-grow"
+                  }`}
+                >
+                  {link}
+                </a>
+              </li>
+            ))}
+          </ul>
+
+          <a
+            href="#"
+            className="border border-neon-orange text-neon-orange px-5 py-2 rounded-full text-sm font-bold tracking-wider hover:bg-neon-orange hover:text-white transition-all duration-200"
+          >
+            JOIN NOW
+          </a>
+        </div>
+      </nav>
+    )
+  }
+
+  export default Navbar
+
+┌────────────────────────────────────────────────────────────┐
+│ React #1: COMPONENTE FUNCIONAL + .map() + useState         │
+│ const Navbar = () => { } es un componente. {links.map()}  │
+│ recorre el array y genera un <li> por enlace (key={link}  │
+│ es obligatorio en React).                                 │
+│ useState("HOME") guarda el link activo; onClick lo        │
+│ actualiza. El link activo queda en text-neon-orange con   │
+│ underline visible; el resto en gris con hover: el texto   │
+│ se pone naranja y el underline crece de izquierda a       │
+│ derecha (animación animate-underline-grow = scaleX 0->1  │
+│ con origin-left, en after: y w-full).                    │
+│                                                           │
+│ Layout estándar: el LOGO (MuscleIcon) a la IZQUIERDA y el     │
+│ grupo de enlaces + botón empujado a la DERECHA con ml-auto   │
+│ (margen automático a la izquierda). El nav ocupa todo el     │
+│ ancho de la pantalla: nada queda centrado ni encajonado.     │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 6 — Crear src/components/Hero.tsx
+══════════════════════════════════════════════════════════════════
+
+CREÁ: src/components/Hero.tsx
+PEGÁ ESTO:
+
+  const Hero = () => {
+    return (
+      <section className="relative min-h-screen flex items-center px-6 md:px-16 overflow-hidden">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-dark-900 via-dark-950 to-black" />
+        <div className="absolute inset-0 -z-10 opacity-30 bg-[radial-gradient(circle_at_70%_30%,#FF550033,transparent_50%)]" />
+        <div className="absolute inset-0 -z-10 opacity-30 bg-[radial-gradient(circle_at_20%_80%,#00E5FF22,transparent_50%)]" />
+
+        <div className="md:w-1/2">
+          <p className="text-neon-cyan text-sm tracking-[0.3em] mb-4 font-bold">
+            IRON ELITE COACHING
+          </p>
+
+          <h1 className="text-4xl md:text-6xl font-extrabold text-white uppercase leading-tight mb-6">
+            Unleash your inner beast.{" "}
+            <span className="text-neon-orange">Build the body you deserve.</span>
+          </h1>
+
+          <p className="text-muted text-lg mb-8">
+            Join Iron Elite Coaching. Expert training. Real results.
+          </p>
+
+          <a
+            href="#"
+            className="inline-block bg-neon-orange text-white font-bold px-8 py-4 rounded-full text-sm tracking-wider uppercase shadow-[0_0_30px_#FF550088] hover:shadow-[0_0_50px_#FF5500] transition-shadow"
+          >
+            Get Started Now
+          </a>
+        </div>
+
+        <p className="absolute bottom-8 right-8 text-neon-cyan text-sm tracking-widest font-bold">
+          TRAINER: ALEX THOMPSON
+        </p>
+      </section>
+    )
+  }
+
+  export default Hero
+
+┌────────────────────────────────────────────────────────────┐
+│ React #2: JSX + clases arbitrarias de Tailwind            │
+│ JSX es HTML dentro de JavaScript: { } permite expresiones.│
+│ La prop -z-10 pone los gradientes DETRÁS del contenido.   │
+│ md:w-1/2 hace que el texto ocupe SOLO la mitad del hero,  │
+│ justificado a la izquierda (no centrado, no encajonado).  │
+│ bg-[radial-gradient(...)] es una clase arbitraria:        │
+│ cualquier valor CSS se puede usar entre corchetes.        │
+│ shadow-[0_0_30px_#FF550088] crea el glow naranja.        │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 7 — Crear src/components/Icons.tsx (SVGs)
+══════════════════════════════════════════════════════════════════
+
+CREÁ: src/components/Icons.tsx
+PEGÁ ESTO:
+
+  export const CoachIcon = ({ color }: { color: string }) => (
+    <svg viewBox="0 0 24 24" fill="none" className="w-10 h-10">
+      <circle cx="12" cy="8" r="4" stroke={color} strokeWidth="1.5" />
+      <path d="M4 20c0-4 3.6-6 8-6s8 2 8 6" stroke={color} strokeWidth="1.5" />
+      <path d="M18 4l1.5 1.5L18 7" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+
+  export const AppleIcon = ({ color }: { color: string }) => (
+    <svg viewBox="0 0 24 24" fill="none" className="w-10 h-10">
+      <path d="M12 20.94c1.5 0 2.75 1.06 4 1.06 3 0 6-8 6-12.22A4.91 4.91 0 0 0 17 5c-2.22 0-4 1.44-5 2-1-.56-2.78-2-5-2a4.9 4.9 0 0 0-5 4.78C2 14 5 22 8 22c1.25 0 2.5-1.06 4-1.06Z" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M10 2c1 .5 2 2 2 5" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  )
+
+  export const DumbbellIcon = ({ color }: { color: string }) => (
+    <svg viewBox="0 0 100 100" fill="none" className="w-10 h-10"
+      stroke={color} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="34" y1="50" x2="66" y2="50" />
+      <rect x="26" y="13" width="8" height="74" rx="3" />
+      <rect x="66" y="13" width="8" height="74" rx="3" />
+      <rect x="16" y="22" width="10" height="56" rx="2" />
+      <rect x="74" y="22" width="10" height="56" rx="2" />
+      <rect x="8" y="33" width="8" height="34" rx="2" />
+      <rect x="84" y="33" width="8" height="34" rx="2" />
+    </svg>
+  )
+
+NOTA: el archivo también tiene un MuscleIcon (músculo de gimnasio
+exportado de Illustrator, viewBox="0 0 612 792", ~125 líneas de paths).
+A diferencia de los otros iconos, éste se usa como LOGO de la marca en
+el Navbar y se pinta con un gradiente (no con stroke):
+
+  export const MuscleIcon = ({ className = "w-10 h-10" }: { className?: string }) => (
+    <svg viewBox="0 0 612 792" className={className}>
+      <defs>
+        <linearGradient id="muscleGradient" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#FF5500" />
+          <stop offset="100%" stopColor="#00E5FF" />
+        </linearGradient>
+      </defs>
+      <path fill="url(#muscleGradient)" d="..." />
+      ... (12 paths en total, todos con fill="url(#muscleGradient)")
+    </svg>
+  )
+
+Recibe className para controlar el tamaño desde afuera (en el Navbar
+se usa <MuscleIcon className="w-8 h-8 md:w-10 md:h-10 shrink-0" />).
+Al pegar desde Illustrator se reemplaza fill:#FFFFFF de los paths "st0"
+por fill="#FFFFFF" (o el gradiente) y los paths restantes quedan en
+negro por defecto (sin atributo fill).
+
+┌────────────────────────────────────────────────────────────┐
+│ React #3: COMPONENTES QUE RECIBEN PROPS                   │
+│ { color }: { color: string } -> cada icono recibe el      │
+│ color como prop y lo usa en stroke={color}. Así el mismo  │
+│ icono puede ser naranja o cyan según dónde se use.        │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 8 — Crear src/components/ServiceCard.tsx
+══════════════════════════════════════════════════════════════════
+
+CREÁ: src/components/ServiceCard.tsx
+PEGÁ ESTO:
+
+  interface ServiceCardProps {
+    accent: "orange" | "cyan"
+    icon: React.ReactNode
+    title: string
+    items: string[]
+  }
+
+  const ServiceCard = ({ accent, icon, title, items }: ServiceCardProps) => {
+    const isOrange = accent === "orange"
+
+    return (
+      <div
+        className={`rounded-2xl p-[1.5px] bg-gradient-to-r from-neon-orange to-neon-cyan transition-all duration-300 hover:-translate-y-1 shadow-[0_0_15px_#FF550066]`}
+      >
+        <div className="bg-dark-800 rounded-[calc(1rem-1.5px)] p-6 flex flex-col gap-4 h-full">
+          <div className={isOrange ? "text-neon-orange" : "text-neon-cyan"}>
+            {icon}
+          </div>
+
+          <h3 className="text-white font-bold text-xl uppercase tracking-wide">
+            {title}
+          </h3>
+
+          <ul className="flex flex-col gap-2 mt-auto">
+            {items.map((item) => (
+              <li key={item} className="text-muted text-sm flex items-center gap-2">
+                <span className={isOrange ? "text-neon-orange" : "text-neon-cyan"}>
+                  +
+                </span>
+                {item}
+              </li>
+            ))}
+          </ul>
+        </div>
+      </div>
+    )
+  }
+
+  export default ServiceCard
+
+┌────────────────────────────────────────────────────────────┐
+│ React #4: ServiceCard NO TIENE DATOS: los recibe por PROPS │
+│                                                           │
+│ ¿De dónde saca los datos? -> de App.tsx. Los datos están  │
+│ hardcodeados en App.tsx y se pasan como props a cada      │
+│ <ServiceCard>. ServiceCard SOLO renderiza lo que recibe.  │
+│ Para cambiar una card editás App.tsx, no este archivo.    │
+│                                                           │
+│ interface ServiceCardProps tipa las 4 props:              │
+│   accent: "orange" | "cyan"  union type: solo admite esos│
+│                               dos valores. Si pasás otro, │
+│                               TypeScript da error.        │
+│   icon: React.ReactNode       tipo para "cualquier JSX".  │
+│                               App.tsx evalúa <CoachIcon   │
+│                               color="#00E5FF" /> y le pasa │
+│                               el ELEMENTO YA construido;  │
+│                               ServiceCard lo pinta con    │
+│                               {icon} sin saber qué SVG es.│
+│   title: string               texto del título.           │
+│   items: string[]             array de strings (la lista).│
+│                                                           │
+│ La firma del componente desestructura las props:          │
+│   ({ accent, icon, title, items }: ServiceCardProps)      │
+│                                                           │
+│ items.map((item) => <li key={item}>{item}</li>) recorre el│
+│ array y genera un <li> por elemento. key={item} es        │
+│ obligatorio para que React identifique cada fila.         │
+│                                                           │
+│ accent maneja un booleano calculado:                      │
+│   const isOrange = accent === "orange"                    │
+│ y se usa en ternarios (isOrange ? claseA : claseB) para   │
+│ decidir clases en el div del icono y el span "+" de cada  │
+│ item. Así un MISMO componente cambia su look según la     │
+│ prop accent que reciba.                                   │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 9 — Crear src/components/NeonLights.tsx (luces decorativas)
+══════════════════════════════════════════════════════════════════
+
+CREÁ: src/components/NeonLights.tsx
+PEGÁ ESTO:
+
+  const NeonLights = ({ lights }: { lights: string[] }) => (
+    <>
+      {lights.map((cls, i) => (
+        <div
+          key={i}
+          aria-hidden
+          className={`pointer-events-none absolute z-0 ${cls}`}
+        />
+      ))}
+    </>
+  )
+
+  export default NeonLights
+
+┌────────────────────────────────────────────────────────────┐
+│ React #5: PROPS CON ARRAY + .map() CON key={i}            │
+│ NeonLights recibe lights: string[] (array de strings).    │
+│ Cada string es UN grupo de clases de Tailwind: la posición │
+│ (top-16 right-10), el tamaño (h-1.5 w-24) y el color      │
+│ (bg-neon-orange o bg-neon-cyan). El componente agrega la  │
+│ base fija: absolute + pointer-events-none + z-0.          │
+│ REGLA DE POSICIÓN: las luces NARANJAS van arriba a la      │
+│ DERECHA de cada sección y las CYANS abajo a la IZQUIERDA.  │
+│ Cada luz es de UN SOLO color (sin gradiente) y RECTA       │
+│ (sin rotate). El glow lo da shadow-[0_0_12px_#FF550088]   │
+│ (naranja) o shadow-[0_0_12px_#00E5FF88] (cyan), que va    │
+│ dentro del string de cada luz. Se renderizan con .map()   │
+│ antes del contenido, por eso quedan DETRÁS de textos y    │
+│ tarjetas (z-0, los textos son contenido en flujo normal). │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 10 — Crear src/components/Testimonials.tsx
+══════════════════════════════════════════════════════════════════
+
+CREÁ: src/components/Testimonials.tsx
+PEGÁ ESTO:
+
+  import { useRef } from 'react'
+  import NeonLights from './NeonLights'
+
+  interface Testimonial {
+    name: string
+    quote: string
+    initials: string
+    active?: boolean
+  }
+
+  const testimonials: Testimonial[] = [
+    {
+      name: "JOHN CARTER",
+      quote: "Lost 45 lbs and gained muscle! Best coach ever!",
+      initials: "JC",
+    },
+    {
+      name: "MARIA LOPEZ",
+      quote: "Alex transformed my physique for my first competition.",
+      initials: "ML",
+      active: true,
+    },
+    {
+      name: "DAVID KIM",
+      quote: "The nutrition plan alone changed everything for me.",
+      initials: "DK",
+    },
+    {
+      name: "SARAH JONES",
+      quote: "Stronger than I have ever been in my life. Thank you Alex!",
+      initials: "SJ",
+    },
+    {
+      name: "MIKE RODRIGUEZ",
+      quote: "Won my first local show after 8 months of coaching.",
+      initials: "MR",
+    },
+  ]
+
+  const Stars = () => (
+    <div className="flex gap-1 text-yellow-400 text-lg">
+      {"★★★★★".split("").map((star, i) => (
+        <span key={i}>{star}</span>
+      ))}
+    </div>
+  )
+
+  const Testimonials = () => {
+    const carousel = useRef<HTMLDivElement>(null)
+
+    const scroll = (dir: number) => {
+      carousel.current?.scrollBy({ left: dir * 400, behavior: "smooth" })
+    }
+
+    return (
+      <section id="testimonials" className="relative py-20 px-6 md:px-16 w-full">
+        <div className="absolute inset-0 -z-10 opacity-30 bg-[radial-gradient(circle_at_20%_80%,#00E5FF22,transparent_50%)]" />
+        <NeonLights
+          lights={[
+            "top-16 right-10 h-1.5 w-28 bg-neon-orange opacity-60 shadow-[0_0_12px_#FF550088]",
+            "top-32 right-36 w-1.5 h-16 bg-neon-orange opacity-50 shadow-[0_0_12px_#FF550088]",
+            "bottom-12 left-10 h-1.5 w-24 bg-neon-cyan opacity-60 shadow-[0_0_12px_#00E5FF88]",
+            "bottom-24 left-32 w-1.5 h-16 bg-neon-cyan opacity-50 shadow-[0_0_12px_#00E5FF88]",
+          ]}
+        />
+        <div className="flex items-center justify-between mb-12">
+          <h2 className="text-white font-extrabold text-3xl md:text-4xl uppercase tracking-wider">
+            Transformations &amp; Testimonials
+          </h2>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => scroll(-1)}
+              aria-label="Anterior"
+              className="w-11 h-11 rounded-full border border-dark-700 text-white text-xl hover:border-neon-orange hover:text-neon-orange transition-colors"
+            >
+              ‹
+            </button>
+            <button
+              onClick={() => scroll(1)}
+              aria-label="Siguiente"
+              className="w-11 h-11 rounded-full border border-dark-700 text-white text-xl hover:border-neon-orange hover:text-neon-orange transition-colors"
+            >
+              ›
+            </button>
+          </div>
+        </div>
+
+        <div
+          ref={carousel}
+          className="flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-4 [scrollbar-width:none]"
+        >
+          {testimonials.map((t) => (
+            <div
+              key={t.name}
+              className={`snap-start shrink-0 w-full md:w-1/2 lg:w-1/3 bg-dark-800 rounded-2xl p-6 flex flex-col items-center text-center gap-4 transition-all duration-300 ${
+                t.active
+                  ? "border-2 border-neon-orange shadow-[0_0_30px_#FF550088]"
+                  : "border border-dark-700"
+              }`}
+            >
+              <div
+                className={`w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl ${
+                  t.active
+                    ? "bg-gradient-to-br from-neon-orange to-neon-cyan"
+                    : "bg-gradient-to-br from-dark-700 to-dark-900"
+                }`}
+              >
+                {t.initials}
+              </div>
+
+              <p className="text-light italic text-sm leading-relaxed">
+                "{t.quote}"
+              </p>
+
+              <Stars />
+
+              <p className="text-white font-bold tracking-widest text-sm">
+                {t.name}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  export default Testimonials
+
+┌────────────────────────────────────────────────────────────┐
+│ React #6: DATOS FUERA + useRef + EVENTOS                  │
+│ Los testimonios son un array afuera del componente.       │
+│ useRef guarda una referencia al <div> del carrusel; las   │
+│ flechas llaman scroll() que hace carousel.scrollBy()      │
+│ para moverse 400px a izquierda (-1) o derecha (1).        │
+│ snap-x snap-mandatory + w-full md:w-1/2 lg:w-1/3 hacen    │
+│ que cada tarjeta "encastre" y muestre 1/2 o 1/3 a la vez. │
+│ La tarjeta active es la que brilla en naranja.            │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 11 — Crear src/components/VideoGallery.tsx
+══════════════════════════════════════════════════════════════════
+
+CREÁ: src/components/VideoGallery.tsx
+PEGÁ ESTO:
+
+  const videos = [
+    { title: "TRAINING DRILLS", id: "Ge7ZVUzxjlM" },
+    { title: "CLIENT PROGRESS", id: "AKBvl3-SBGw" },
+    { title: "COACH TIPS", id: "Ge7ZVUzxjlM" },
+    { title: "COMPETITION DAY", id: "PQmriSJJhYk" },
+  ]
+
+  const VideoGallery = () => {
+    return (
+      <section id="videos" className="relative py-20 px-6 md:px-16 w-full">
+        <div className="absolute inset-0 -z-10 opacity-30 bg-[radial-gradient(circle_at_70%_40%,#FF550033,transparent_50%)]" />
+        <h2 className="text-white font-extrabold text-3xl md:text-4xl uppercase tracking-wider mb-12">
+          Video Gallery
+        </h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {videos.map((video) => (
+            <figure
+              key={video.title}
+              className="rounded-2xl overflow-hidden border border-dark-700 bg-dark-800 border-2 border-red-700 
+              shadow-[0_0_15px_#FF550066]"
+            >
+              <div className="aspect-video">
+                <iframe
+                  className="w-full h-full"
+                  src={`https://www.youtube.com/embed/${video.id}`}
+                  title={video.title}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              </div>
+
+              <figcaption className="text-white text-xs tracking-widest font-bold px-4 py-3 border-t border-dark-700">
+                {video.title}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      </section>
+    )
+  }
+
+  export default VideoGallery
+
+┌────────────────────────────────────────────────────────────┐
+│ React #7: IFRAMES + TEMPLATE LITERAL + SOMBRA             │
+│ Cada video es un <iframe> de YouTube embebido. El src     │
+│ se arma con template literal: https://www.youtube.com/    │
+│ embed/${video.id}. Cambiá el id en el array videos y      │
+│ cargás CUALQUIER video de YouTube.                        │
+│ allow + allowFullScreen son las props obligatorias para   │
+│ que el reproductor funcione dentro de la página.          │
+│ El <figure> lleva border-2 border-red-700 (borde rojo)    │
+│ y shadow-[0_0_15px_#FF550066] (sombra naranja).           │
+│ NOTA: los videos requieren internet.                      │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 12 — Crear src/components/Footer.tsx
+══════════════════════════════════════════════════════════════════
+
+CREÁ: src/components/Footer.tsx
+PEGÁ ESTO:
+
+  const socials = [
+    { name: "Instagram", path: "M7 3h10a4 4 0 014 4v10a4 4 0 01-4 4H7a4 4 0 01-4-4V7a4 4 0 014-4zM12 8.5a3.5 3.5 0 100 7 3.5 3.5 0 000-7zM16.5 6.5h.5" },
+    { name: "YouTube", path: "M3 7.5a3 3 0 013-3h12a3 3 0 013 3v9a3 3 0 01-3 3H6a3 3 0 01-3-3v-9zM10 9.5l5 2.5-5 2.5v-5z" },
+    { name: "TikTok", path: "M14 3c.5 2.6 2.2 4.3 4.8 4.5v3c-1.8 0-3.4-.6-4.8-1.6v6.1a5.9 5.9 0 11-5.9-5.9c.3 0 .7 0 1 .1v3.1a2.8 2.8 0 101.9 2.7V3h3z" },
+    { name: "Facebook", path: "M14 9h3l-.5 3H14v9h-3.5v-9H8V9h2.5V7.4c0-2 1.2-3.4 3.4-3.4H14V9z" },
+  ]
+
+  const Footer = () => {
+    return (
+      <footer className="relative py-10 px-6 md:px-16 mt-10 before:absolute before:top-0 before:left-0 before:h-0.5 before:w-full before:bg-gradient-to-r from-neon-orange to-neon-cyan">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex gap-5">
+            {socials.map((social) => (
+              <a
+                key={social.name}
+                href="#"
+                aria-label={social.name}
+                className="text-white hover:text-neon-cyan transition-colors"
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-6 h-6">
+                  <path d={social.path} strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </a>
+            ))}
+          </div>
+
+          <p className="text-muted text-sm text-center">
+            contact@ironelite.com — +1 (555) 123-4567
+          </p>
+
+          <p className="text-muted text-xs">
+            &copy; {new Date().getFullYear()} Iron Elite Performance. All rights reserved.
+          </p>
+        </div>
+      </footer>
+    )
+  }
+
+  export default Footer
+
+┌────────────────────────────────────────────────────────────┐
+│ React #8: ARRAY DE OBJETOS + PROPS DENTRO DEL JSX         │
+│ socials es un array de objetos { name, path }. Cada uno   │
+│ se renderiza con .map() y usa social.name / social.path   │
+│ dentro del JSX. {new Date().getFullYear()} es JS vivo.   │
+│ El footer no usa border-t: la línea superior es un        │
+│ before: (pseudo-elemento) con before:bg-gradient-to-r     │
+│ from-neon-orange to-neon-cyan (gradiente naranja→cyan).   │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 13 — Armar todo en src/App.tsx
+══════════════════════════════════════════════════════════════════
+
+ABRÍ: src/App.tsx (reemplazá TODO su contenido)
+PEGÁ ESTO:
+
+  import Navbar from './components/Navbar'
+  import Hero from './components/Hero'
+  import ServiceCard from './components/ServiceCard'
+  import Testimonials from './components/Testimonials'
+  import VideoGallery from './components/VideoGallery'
+  import Footer from './components/Footer'
+  import NeonLights from './components/NeonLights'
+  import { CoachIcon, AppleIcon, DumbbellIcon } from './components/Icons'
+
+  function App() {
+    return (
+      <>
+        <Navbar />
+        <Hero />
+
+        <section id="services" className="relative py-20 px-6 md:px-16 w-full">
+          <div className="absolute inset-0 -z-10 opacity-30 bg-[radial-gradient(circle_at_80%_20%,#FF550033,transparent_50%)]" />
+          <NeonLights
+            lights={[
+              "top-16 right-10 h-1.5 w-24 bg-neon-orange opacity-60 shadow-[0_0_12px_#FF550088]",
+              "top-32 right-36 w-1.5 h-16 bg-neon-orange opacity-50 shadow-[0_0_12px_#FF550088]",
+              "bottom-12 left-10 h-1.5 w-24 bg-neon-cyan opacity-60 shadow-[0_0_12px_#00E5FF88]",
+              "bottom-24 left-32 w-1.5 h-16 bg-neon-cyan opacity-50 shadow-[0_0_12px_#00E5FF88]",
+            ]}
+          />
+          <h2 className="text-white font-extrabold text-3xl md:text-4xl uppercase tracking-wider mb-12">
+            Our Elite Services
+          </h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <ServiceCard
+              accent="cyan"
+              icon={<CoachIcon color="#00E5FF" />}
+              title="Personalized Coaching"
+              items={["Detailed Plans", "1-on-1 Support"]}
+            />
+            <ServiceCard
+              accent="orange"
+              icon={<AppleIcon color="#FF5500" />}
+              title="Nutrition Strategy"
+              items={["Meal Plans", "Macros", "Supplementation"]}
+            />
+            <ServiceCard
+              accent="cyan"
+              icon={<DumbbellIcon color="#00E5FF" />}
+              title="Workout Programs"
+              items={["Strength", "Hypertrophy", "Competition Prep"]}
+            />
+          </div>
+        </section>
+
+        <Testimonials />
+        <VideoGallery />
+        <Footer />
+      </>
+    )
+  }
+
+  export default App
+
+┌────────────────────────────────────────────────────────────┐
+│ React #9: COMPOSICIÓN DE COMPONENTES                      │
+│ App() no tiene HTML propio: solo organiza los demás        │
+│ componentes. <> </> es un fragmento: agrupa sin meter     │
+│ un <div> extra en el DOM. Las <section> llevan id para    │
+│ que los links del navbar puedan navegar (smooth scroll). │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+PASO 14 — Probar
+══════════════════════════════════════════════════════════════════
+
+En la terminal (parado en el proyecto):
+
+  pnpm run dev
+
+Abrí http://localhost:5173 en el navegador.
+
+┌────────────────────────────────────────────────────────────┐
+│ Si ves navbar con enlaces a la derecha, hero con texto    │
+│ a la izquierda ocupando la mitad, secciones full-width,   │
+│ carrusel de testimonios con flechas, videos de YouTube    │
+│ embebidos y footer -> ¡LO LOGRASTE!                       │
+│                                                           │
+│ ERRORES COMUNES:                                          │
+│ "Module not found" -> revisá rutas y mayúsculas de los    │
+│   import (Navbar ≠ navbar)                                │
+│ "tailwindcss not found" -> volvé al PASO 1                │
+│ Página en blanco -> Ctrl+F5 o abrí en incógnito           │
+│ No hay glow/bordes -> revisá que los nombres de @theme    │
+│   coincidan (neon-orange, neon-cyan, dark-800, etc.)     │
+│ Videos en negro -> los iframes necesitan internet (y      │
+│   reemplazá los ids de ejemplo por los tuyos)             │
+└────────────────────────────────────────────────────────────┘
+
+══════════════════════════════════════════════════════════════════
+RESUMEN DE CONCEPTOS DE REACT QUE APRENDISTE
+══════════════════════════════════════════════════════════════════
+
+  #1  Componente funcional               -> Navbar, Hero, etc.
+  #2  .map() para listas                 -> links, testimonios, videos
+  #3  Props { color }                    -> Icons.tsx reutilizable
+  #4  Props tipadas + ternario           -> ServiceCard (accent)
+  #5  useRef + eventos onClick           -> flechas del carrusel
+  #6  iframes + template literal         -> VideoGallery (src dinámica)
+  #7  Array de objetos en JSX            -> socials del footer
+  #8  Composición de componentes         -> App.tsx como orquestador
+  #9  useState (estado local)            -> link activo del navbar
+  #10 @keyframes + --animate en @theme   -> underline animado del navbar
+  #11 Props: array de strings + key={i}  -> NeonLights (luces decorativas)
+
+══════════════════════════════════════════════════════════════════
+PROXIMOS PASOS (cuando quieras)
+══════════════════════════════════════════════════════════════════
+
+  - Reemplazar los gradientes por fotos reales: agregá la
+    imagen a src/assets y usá <img> o background-image.
+  - Poner tus videos: cambiá el id en el array videos de
+    VideoGallery.tsx por el de tus videos de YouTube.
+  - Hacer que los botones del navbar naveguen: cambiá href="#"
+    por href="#services", "#testimonials", "#videos", "#contact".
+  - Agregar una sección de contacto con formulario.

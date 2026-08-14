@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@theme {
+   --color-dark-950: #0D0D11;
+   --color-dark-900: #121218;
+   --color-dark-800: #1A1A22;
+   --color-dark-700: #26262E;
+   --color-neon-orange: #FF5500;
+   --color-neon-cyan: #00E5FF;
+   --color-light: #EEEEEE;
+   --color-muted: #9CA3AF;
+
+   --animate-underline-grow: underline-grow 0.35s ease-out forwards;
+
+   @keyframes underline-grow {
+      from { transform: scaleX(0); }
+      to { transform: scaleX(1); }
+   }
+}
+
+html {
+   scroll-behavior: smooth;
+}
+
+body {
+   margin: 0;
+   background-color: var(--color-dark-950);
+   color: var(--color-light);
+   font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
